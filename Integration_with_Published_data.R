@@ -8,10 +8,8 @@ library(DESeq2)
 # Reference: https://doi.org/10.1038/s41467-018-05418-8
 # Raw counts and metadata were downloaded from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE98679
 
-load("Data/Jaeger_snRNAseq_rawCounts.rda")
-
-jaeger.df <- df
-jaeger.p <- pdata
+jaeger.df <- read.csv("Data/Jaeger_snRNAseq_rawCounts.csv")
+jaeger.p <- read.csv("Data/Jaeger_snRNAseq_metadata.csv")
 jaeger.p <- jaeger.p[jaeger.p$cell.type %in% c("DG","Unknown"),]
 jaeger.df <- jaeger.df[,rownames(jaeger.p)]
 jaeger.p$batch <- "Jaeger"

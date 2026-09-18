@@ -5,20 +5,18 @@ library(DESeq2)
 library(SeuratWrappers)
 library(monocle3)
 
-# Merge SMART-seq datasets
-seurat.2026 <- read.csv("Data/SMARTseq_rawCounts_2026.csv",row.names=1)
-pdata.2026 <- read.csv("Data/260310_SarahP_metadata_final.csv")
-pdata.2026$sampleID <- paste0("X",pdata.2026$sampleID)
+# SMART-seq raw counts
+seurat <- read.csv("GSE299926_SMARTseq_rawCounts.csv",row.names = 1,check.names = F)
+
+# Merge SMART-seq batches
+pdata.2026 <- read.csv("GSE299926_SMARTseq_metadata_2026.csv",check.names = F)
 pdata.2026$batch <- "2026"
 
-seurat.2025 <- read.csv("Data/SMARTseq_rawCounts_2025.csv",row.names=1)
-pdata.2025 <- read.csv("Data/251121_SarahP_metadata_final.csv")
-pdata.2025$sampleID <- paste0("X",pdata.2025$sampleID)
+pdata.2025 <- read.csv("GSE299926_SMARTseq_metadata_2025.csv",check.names = F)
 pdata.2025$batch <- factor(pdata.2025$sort_date)
+levels(pdata.2025$batch) <- c("batch.1.2025","batch.2.2025")
 
-seurat.2023 <- read.csv("Data/SMARTseq_rawCounts_2023.csv",row.names=1)
-pdata.2023 <- read.csv("Data/230126_SarahP_metadata_final.csv")
-pdata.2023$sampleID <- paste0("X",pdata.2023$sampleID)
+pdata.2023 <- read.csv("GSE299926_SMARTseq_metadata_2023.csv",check.names = F)
 pdata.2023$FOSraw <- NA
 pdata.2023$GFPraw <- NA
 pdata.2023$batch <- factor(pdata.2023$sort_plate)
@@ -28,24 +26,16 @@ levels(pdata.2023$batch) <- c("batch.1.2023","batch.1.2023","batch.1.2023","batc
 # "35","36","37","76","Z7A" = batch.1
 # "77","79","Z78","ZA1" = batch.2
 
-df <- merge(seurat.2023,seurat.2025,by=0)
-rownames(df) <- as.character(df$Row.names)
-df <- df[,-1]
-
-df <- merge(df,seurat.2026,by=0)
-rownames(df) <- as.character(df$Row.names)
-df <- df[,-1]
-
 cols <- c("sampleID","mouse_number","mouse_birthdate","sex","exposure_type","timepoint","FullCategory","batch","FOSraw","GFPraw")
 
 p <- rbind.data.frame(pdata.2026[,cols],pdata.2025[,cols],pdata.2023[,cols])
 rownames(p) <- p$sampleID
 
-p <- p[colnames(df),]
+p <- p[colnames(seurat),]
 
-identical(rownames(p),colnames(df)) # TRUE
+identical(rownames(p),colnames(seurat)) # TRUE
 
-combined <- CreateSeuratObject(counts = df,min.cells = 1,meta.data=p) # 1920
+combined <- CreateSeuratObject(counts = seurat,min.cells = 1,meta.data=p) # 1920
 
 # Preprocessing and normalization
 combined <- combined %>%

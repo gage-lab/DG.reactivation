@@ -4,8 +4,8 @@ library(dplyr)
 library(ggrepel)
 library(DESeq2)
 
-pipseq.counts <- read.csv("Data/PIPseq_rawCounts.csv",row.names = 1)
-pdata <- read.csv("Data/PIPseq_metadata.csv",row.names = 1)
+pipseq.counts <- read.csv("GSE299926_PIPseq_rawCounts.csv",row.names = 1)
+pdata <- read.csv("GSE299926_PIPseq_metadata.csv",row.names = 1)
 
 fourcolor <- c("deeppink","green4","black","#e08c05")
 
